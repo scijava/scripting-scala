@@ -4,3 +4,6 @@
 .project
 .classpath
 .settings/
+
+# Maven #
+target/
