@@ -33,25 +33,39 @@
  * #L%
  */
 
-package imagej.script;
+package imagej.plugins.scripting.scala;
 
-import java.util.HashMap;
+import static org.junit.Assert.assertEquals;
+import imagej.script.ScriptService;
 
-import javax.script.Bindings;
+import java.io.StringWriter;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+
+import org.junit.Test;
+import org.scijava.Context;
 
 /**
- * Scala variable bindings.
- * <p>
- * This is only a hack that stops working after the engine has evaluated
- * anything because the values are not updated. However, there is work
- * going on in the Scala project to -- finally -- make it JSR-233 compliant
- * so we do not really need to bother all that much for now: 2.11.0 will
- * fix it by giving us a proper ScriptEngineFactory.
- * </p>
+ * Scala unit tests.
+ * 
  * @author Johannes Schindelin
  */
-public class ScalaBindings extends HashMap<String, Object> implements Bindings {
+public class ScalaTest {
 
-	private static final long serialVersionUID = 1L;
+	@Test
+	public void testBasic() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
 
+		final ScriptEngineFactory factory = scriptService.getByFileExtension("scala");
+		final ScriptEngine engine = factory.getScriptEngine();
+
+		final StringWriter writer = new StringWriter();
+		engine.put("writer", writer);
+
+		String script = "writer.write(\"3\");";
+		engine.eval(script);
+		assertEquals("3", writer.toString());
+	}
 }

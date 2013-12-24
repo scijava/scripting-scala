@@ -33,32 +33,25 @@
  * #L%
  */
 
-package imagej.script;
+package imagej.plugins.scripting.scala;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
-import javax.script.ScriptEngine;
-
-import org.scijava.plugin.Plugin;
+import javax.script.Bindings;
 
 /**
- * An adapter of the Clojure interpreter to ImageJ's scripting interfaces
- * 
+ * Scala variable bindings.
+ * <p>
+ * This is only a hack that stops working after the engine has evaluated
+ * anything because the values are not updated. However, there is work
+ * going on in the Scala project to -- finally -- make it JSR-233 compliant
+ * so we do not really need to bother all that much for now: 2.11.0 will
+ * fix it by giving us a proper ScriptEngineFactory.
+ * </p>
  * @author Johannes Schindelin
- * @see ScriptEngine
  */
-@Plugin(type = ScriptLanguage.class)
-public class Scala extends AbstractScriptEngineFactory {
+public class ScalaBindings extends HashMap<String, Object> implements Bindings {
 
-	@Override
-	public List<String> getExtensions() {
-		return Arrays.asList("scala");
-	}
-
-	@Override
-	public ScriptEngine getScriptEngine() {
-		return new ScalaScriptEngine();
-	}
+	private static final long serialVersionUID = 1L;
 
 }

@@ -52,7 +52,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.script</packageName>
+							<packageName>imagej.plugins.scripting.scala</packageName>
 						</manifest>
 					</archive>
 				</configuration>

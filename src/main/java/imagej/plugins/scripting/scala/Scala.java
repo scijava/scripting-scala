@@ -33,77 +33,35 @@
  * #L%
  */
 
-package imagej.script;
+package imagej.plugins.scripting.scala;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Map.Entry;
+import imagej.script.AbstractScriptEngineFactory;
+import imagej.script.ScriptLanguage;
 
-import javax.script.ScriptContext;
-import javax.script.ScriptException;
+import java.util.Arrays;
+import java.util.List;
 
-import scala.collection.immutable.List;
-import scala.tools.nsc.Settings;
-import scala.tools.nsc.interpreter.IMain;
+import javax.script.ScriptEngine;
+
+import org.scijava.plugin.Plugin;
 
 /**
- * A Scala interpreter for ImageJ.
+ * An adapter of the Clojure interpreter to ImageJ's scripting interfaces
  * 
  * @author Johannes Schindelin
+ * @see ScriptEngine
  */
-public class ScalaScriptEngine extends AbstractScriptEngine
-{
-	{
-		engineScopeBindings = new ScalaBindings();
+@Plugin(type = ScriptLanguage.class)
+public class Scala extends AbstractScriptEngineFactory {
+
+	@Override
+	public List<String> getExtensions() {
+		return Arrays.asList("scala");
 	}
 
 	@Override
-	public Object eval(final String script) throws ScriptException {
-		try {
-			return interpreter().interpret(script);
-		}
-		catch (final Exception e) {
-			throw new ScriptException(e);
-		}
+	public ScriptEngine getScriptEngine() {
+		return new ScalaScriptEngine();
 	}
 
-	@Override
-	public Object eval(final Reader reader) throws ScriptException {
-		try {
-			final BufferedReader bufferedReader = new BufferedReader(reader);
-			final StringWriter writer = new StringWriter();
-			for (;;) {
-				final String line = bufferedReader.readLine();
-				if (line == null) break;
-				writer.write(line);
-				writer.write("\n");
-			}
-			return interpreter().interpret(writer.toString());
-		}
-		catch (final Exception e) {
-			throw new ScriptException(e);
-		}
-	}
-
-	private IMain interpreter() {
-		final ScriptContext context = getContext();
-		final Writer writer = context.getWriter();
-
-		final Settings settings = new Settings();
-		settings.usejavacp().tryToSet(List.make(1, "true"));
-		final PrintWriter out = writer == null ? null :
-			(writer instanceof PrintWriter ? (PrintWriter)writer : new PrintWriter(writer));
-		final IMain interpreter = out == null ? new IMain(settings) : new IMain(settings, out);
-
-		for (final Entry<String, Object> entry : engineScopeBindings.entrySet()) {
-			final String name = entry.getKey();
-			final Object value = entry.getValue();
-			interpreter.bind(name, value.getClass().getCanonicalName(), value, List.make(0, ""));
-		}
-		
-		return interpreter;
-	}
 }
