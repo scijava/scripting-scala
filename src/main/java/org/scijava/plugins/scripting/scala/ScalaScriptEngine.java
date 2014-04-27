@@ -33,9 +33,7 @@
  * #L%
  */
 
-package imagej.plugins.scripting.scala;
-
-import imagej.script.AbstractScriptEngine;
+package org.scijava.plugins.scripting.scala;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -47,6 +45,8 @@ import java.util.Map.Entry;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
+import org.scijava.script.AbstractScriptEngine;
+
 import scala.collection.immutable.List;
 import scala.tools.nsc.Settings;
 import scala.tools.nsc.interpreter.IMain;
@@ -56,8 +56,8 @@ import scala.tools.nsc.interpreter.IMain;
  * 
  * @author Johannes Schindelin
  */
-public class ScalaScriptEngine extends AbstractScriptEngine
-{
+public class ScalaScriptEngine extends AbstractScriptEngine {
+
 	{
 		engineScopeBindings = new ScalaBindings();
 	}

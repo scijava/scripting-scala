@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.plugins.scripting.scala;
+package org.scijava.plugins.scripting.scala;
 
 import java.util.HashMap;
 

@@ -33,10 +33,7 @@
  * #L%
  */
 
-package imagej.plugins.scripting.scala;
-
-import imagej.script.AbstractScriptEngineFactory;
-import imagej.script.ScriptLanguage;
+package org.scijava.plugins.scripting.scala;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +41,8 @@ import java.util.List;
 import javax.script.ScriptEngine;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.script.AbstractScriptLanguage;
+import org.scijava.script.ScriptLanguage;
 
 /**
  * An adapter of the Clojure interpreter to ImageJ's scripting interfaces
@@ -52,7 +51,7 @@ import org.scijava.plugin.Plugin;
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class Scala extends AbstractScriptEngineFactory {
+public class ScalaLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {

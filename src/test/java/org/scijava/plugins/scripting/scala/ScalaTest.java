@@ -33,18 +33,18 @@
  * #L%
  */
 
-package imagej.plugins.scripting.scala;
+package org.scijava.plugins.scripting.scala;
 
 import static org.junit.Assert.assertEquals;
-import imagej.script.ScriptService;
 
 import java.io.StringWriter;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptService;
 
 /**
  * Scala unit tests.
@@ -58,13 +58,14 @@ public class ScalaTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptEngineFactory factory = scriptService.getByFileExtension("scala");
-		final ScriptEngine engine = factory.getScriptEngine();
+		final ScriptLanguage language =
+			scriptService.getLanguageByExtension("scala");
+		final ScriptEngine engine = language.getScriptEngine();
 
 		final StringWriter writer = new StringWriter();
 		engine.put("writer", writer);
 
-		String script = "writer.write(\"3\");";
+		final String script = "writer.write(\"3\");";
 		engine.eval(script);
 		assertEquals("3", writer.toString());
 	}

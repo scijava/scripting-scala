@@ -1,65 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.81</version>
+		<version>1.167</version>
 		<relativePath />
 	</parent>
 
-	<groupId>net.imagej</groupId>
-	<artifactId>ij-scripting-scala</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>scripting-scala</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
 
-	<name>Scala Scripting For ImageJ</name>
-	<description>An adapter of the Scala interpreter to the ImageJ scripting interfaces</description>
+	<name>SciJava Scripting: Scala</name>
+	<description>JSR-223-compliant Scala scripting language plugin.</description>
+	<url>http://scijava.org/</url>
+	<inceptionYear>2013</inceptionYear>
 
-	<properties>
-		<scala.version>2.10.0</scala.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${imagej.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-library</artifactId>
-			<version>${scala.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-compiler</artifactId>
-			<version>${scala.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<packageName>imagej.plugins.scripting.scala</packageName>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<licenses>
+		<license>
+			<name>GNU General Public License v2+</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<developers>
 		<developer>
@@ -77,12 +44,76 @@
 		</developer>
 	</developers>
 
-	<repositories>
-		<!-- NB: for project parent -->
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-	</repositories>
+	<scm>
+		<connection>scm:git:git://github.com/scijava/scripting-scala</connection>
+		<developerConnection>scm:git:git@github.com:scijava/scripting-scala</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/scijava/scripting-scala</url>
+	</scm>
+
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/scijava/scripting-scala/issues</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>https://jenkins.imagej.net/job/scripting-Scala/</url>
+	</ciManagement>
+
+	<properties>
+		<scala.version>2.10.0</scala.version>
+	</properties>
+
+	<dependencies>
+		<!-- SciJava dependencies -->
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+		</dependency>
+
+		<!-- Third-party dependencies -->
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>${scala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-compiler</artifactId>
+			<version>${scala.version}</version>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>org.scijava.plugins.scripting.scala</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<licenseName>bsd_2</licenseName>
+					<organizationName>Board of Regents of the University of
+Wisconsin-Madison.</organizationName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
