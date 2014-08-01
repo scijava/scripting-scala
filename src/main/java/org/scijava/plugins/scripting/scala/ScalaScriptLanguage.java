@@ -51,7 +51,7 @@ import org.scijava.script.ScriptLanguage;
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class ScalaLanguage extends AbstractScriptLanguage {
+public class ScalaScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {
