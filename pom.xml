@@ -57,7 +57,7 @@
 
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>https://jenkins.imagej.net/job/scripting-Scala/</url>
+		<url>http://jenkins.imagej.net/job/scripting-Scala/</url>
 	</ciManagement>
 
 	<properties>
