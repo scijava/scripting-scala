@@ -1,3 +1,5 @@
+![](http://jenkins.imagej.net/job/scripting-Scala/lastBuild/badge/icon)
+
 # Scala Scripting
 
 This library provides a
