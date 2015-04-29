@@ -1,4 +1,4 @@
-![](http://jenkins.imagej.net/job/scripting-Scala/lastBuild/badge/icon)
+[![](http://jenkins.imagej.net/job/scripting-Scala/lastBuild/badge/icon)](http://jenkins.imagej.net/job/scripting-Scala/)
 
 # Scala Scripting
 
