@@ -19,7 +19,6 @@
 	<description>JSR-223-compliant Scala scripting language plugin.</description>
 	<url>http://scijava.org/</url>
 	<inceptionYear>2013</inceptionYear>
-
 	<licenses>
 		<license>
 			<name>Simplified BSD License</name>
@@ -49,12 +48,10 @@
 		<tag>HEAD</tag>
 		<url>https://github.com/scijava/scripting-scala</url>
 	</scm>
-
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/scijava/scripting-scala/issues</url>
 	</issueManagement>
-
 	<ciManagement>
 		<system>Jenkins</system>
 		<url>http://jenkins.imagej.net/job/scripting-Scala/</url>
@@ -114,5 +111,4 @@ Wisconsin-Madison.</organizationName>
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
