@@ -30,77 +30,69 @@
 
 package org.scijava.plugins.scripting.scala;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Map.Entry;
+import javax.script.ScriptEngine;
 
-import javax.script.ScriptContext;
-import javax.script.ScriptException;
+import org.scijava.script.AdaptedScriptEngine;
 
-import org.scijava.script.AbstractScriptEngine;
-
-import scala.collection.immutable.List;
-import scala.tools.nsc.Settings;
 import scala.tools.nsc.interpreter.IMain;
+import scala.tools.nsc.settings.MutableSettings.BooleanSetting;
 
 /**
- * A Scala interpreter for ImageJ.
- * 
- * @author Johannes Schindelin
+ * An adapter of the Scala script engine.
+ *
+ * @author Curtis Rueden
  */
-public class ScalaScriptEngine extends AbstractScriptEngine {
+public class ScalaScriptEngine extends AdaptedScriptEngine {
 
-	{
-		engineScopeBindings = new ScalaBindings();
+	private final IMain engine;
+
+	public ScalaScriptEngine(final ScriptEngine engine) {
+		super(engine);
+
+		if (!(engine instanceof IMain)) {
+			throw new IllegalArgumentException(//
+				"Not a Scala script engine: " + engine.getClass().getName());
+		}
+		this.engine = (IMain) engine;
+
+		enableClassPath();
 	}
+
+	// -- ScriptEngine methods --
 
 	@Override
-	public Object eval(final String script) throws ScriptException {
-		try {
-			return interpreter().interpret(script);
-		}
-		catch (final Exception e) {
-			throw new ScriptException(e);
-		}
+	public void put(final String key, final Object value) {
+		// NB: Add a suffix to the key indicating its type.
+		// This is necessary in order to properly populate the variable.
+		//
+		// Thanks to takawitter for this invocation:
+		// https://gist.github.com/takawitter/5479445
+
+		engine.put(key + ": " + value.getClass().getName(), value);
 	}
 
-	@Override
-	public Object eval(final Reader reader) throws ScriptException {
-		try {
-			final BufferedReader bufferedReader = new BufferedReader(reader);
-			final StringWriter writer = new StringWriter();
-			for (;;) {
-				final String line = bufferedReader.readLine();
-				if (line == null) break;
-				writer.write(line);
-				writer.write("\n");
-			}
-			return interpreter().interpret(writer.toString());
-		}
-		catch (final Exception e) {
-			throw new ScriptException(e);
-		}
+	// -- Helper methods --
+
+	private void enableClassPath() {
+		// NB: Enable class-path-based processing.
+		//
+		// Without this, the engine fails with the following error:
+		//
+		// [init] error: error while loading Object, Missing dependency
+		// 'object scala in compiler mirror', required by
+		// .../lib/rt.jar(java/lang/Object.class)
+		//
+		// Failed to initialize compiler: object scala in compiler mirror not found.
+		// ** Note that as of 2.8 scala does not assume use of the java classpath.
+		// ** For the old behavior pass -usejavacp to scala, or if using a Settings
+		// ** object programmatically, settings.usejavacp.value = true.
+		//
+		// Thanks to takawitter for this invocation:
+		// https://gist.github.com/takawitter/5479445
+
+		final BooleanSetting usejavacp = //
+			(BooleanSetting) engine.settings().usejavacp();
+		usejavacp.value_$eq(true);
 	}
 
-	private IMain interpreter() {
-		final ScriptContext context = getContext();
-		final Writer writer = context.getWriter();
-
-		final Settings settings = new Settings();
-		settings.usejavacp().tryToSet(List.make(1, "true"));
-		final PrintWriter out = writer == null ? null :
-			(writer instanceof PrintWriter ? (PrintWriter)writer : new PrintWriter(writer));
-		final IMain interpreter = out == null ? new IMain(settings) : new IMain(settings, out);
-
-		for (final Entry<String, Object> entry : engineScopeBindings.entrySet()) {
-			final String name = entry.getKey();
-			final Object value = entry.getValue();
-			interpreter.bind(name, value.getClass().getCanonicalName(), value, List.make(0, ""));
-		}
-		
-		return interpreter;
-	}
 }

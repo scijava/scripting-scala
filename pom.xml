@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>9.0.0</version>
+		<version>10.1.0</version>
 		<relativePath />
 	</parent>
 
@@ -87,7 +87,8 @@
 	</ciManagement>
 
 	<properties>
-		<scala.version>2.10.0</scala.version>
+		<scijava.jvm.version>1.8</scijava.jvm.version>
+		<scala.version>2.12.0-M4</scala.version>
 	</properties>
 
 	<dependencies>
@@ -97,12 +98,7 @@
 			<artifactId>scijava-common</artifactId>
 		</dependency>
 
-		<!-- Third-party dependencies -->
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-library</artifactId>
-			<version>${scala.version}</version>
-		</dependency>
+		<!-- Scala dependencies -->
 		<dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-compiler</artifactId>

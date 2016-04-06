@@ -30,32 +30,28 @@
 
 package org.scijava.plugins.scripting.scala;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.script.ScriptEngine;
 
 import org.scijava.plugin.Plugin;
-import org.scijava.script.AbstractScriptLanguage;
+import org.scijava.script.AdaptedScriptLanguage;
 import org.scijava.script.ScriptLanguage;
 
 /**
  * An adapter of the Scala interpreter to the SciJava scripting interface.
  * 
+ * @author Curtis Rueden
  * @author Johannes Schindelin
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class, name = "Scala")
-public class ScalaScriptLanguage extends AbstractScriptLanguage {
+public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 
-	@Override
-	public List<String> getExtensions() {
-		return Arrays.asList("scala");
+	public ScalaScriptLanguage() {
+		super("scala");
 	}
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new ScalaScriptEngine();
+		return new ScalaScriptEngine(super.getScriptEngine());
 	}
-
 }
