@@ -30,11 +30,20 @@
 
 package org.scijava.plugins.scripting.scala;
 
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import javax.script.ScriptEngine;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.script.AdaptedScriptLanguage;
 import org.scijava.script.ScriptLanguage;
+
+import scala.tools.nsc.ConsoleWriter;
+import scala.tools.nsc.NewLinePrintWriter;
+import scala.tools.nsc.Settings;
+import scala.tools.nsc.interpreter.Scripted;
 
 /**
  * An adapter of the Scala interpreter to the SciJava scripting interface.
@@ -52,6 +61,20 @@ public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new ScalaScriptEngine(super.getScriptEngine());
+		final Settings settings = new Settings();
+		settings.classpath().value_$eq(getClasspath());
+
+		return Scripted.apply(new Scripted.Factory(), settings,
+			new NewLinePrintWriter(new ConsoleWriter(), true));
+	}
+
+	/**
+	 * Uses ClassLoader to generate a string of the current classpath separated by
+	 * OS specific separator.
+	 */
+	private static String getClasspath() {
+		return Arrays.stream(((URLClassLoader) ClassLoader.getSystemClassLoader())
+			.getURLs()).map(url -> url.getPath()).collect(Collectors.joining(System
+				.getProperty("path.separator")));
 	}
 }
