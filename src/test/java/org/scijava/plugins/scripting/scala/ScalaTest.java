@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.StringWriter;
 
 import javax.script.ScriptEngine;
+import javax.script.SimpleScriptContext;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -43,25 +44,26 @@ import org.scijava.script.ScriptService;
 
 /**
  * Scala unit tests.
- * 
+ *
  * @author Johannes Schindelin
  */
 public class ScalaTest {
 
-	@Test
-	public void testBasic() throws Exception {
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
+    @Test
+    public void testBasic() throws Exception {
+        final Context context = new Context(ScriptService.class);
+        final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptLanguage language =
-			scriptService.getLanguageByExtension("scala");
-		final ScriptEngine engine = language.getScriptEngine();
+        final ScriptLanguage language =
+            scriptService.getLanguageByExtension("scala");
+        final ScriptEngine engine = language.getScriptEngine();
 
-		final StringWriter writer = new StringWriter();
-		engine.put("writer", writer);
+        final SimpleScriptContext ssc = new SimpleScriptContext();
+        final StringWriter writer = new StringWriter();
+        ssc.setWriter(writer);
 
-		final String script = "writer.write(\"3\");";
-		engine.eval(script);
-		assertEquals("3", writer.toString());
-	}
+        final String script = "print(\"3\");";
+        engine.eval(script, ssc);
+        assertEquals("3", writer.toString());
+    }
 }
