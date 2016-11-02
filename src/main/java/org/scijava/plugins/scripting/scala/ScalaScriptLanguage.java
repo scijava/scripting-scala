@@ -65,18 +65,9 @@ public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 
     @Override
     public ScriptEngine getScriptEngine() {
-        // The Scala script engine uses the "java.class.path" property from System
-        // properties to resolve calls to other libraries; however, when
-        // launched imagej-launcher, only the ImageJ-launcher is available in
-        // System.getProperty("java.class.path"). Therefore, we check whether
-        // the java.class.path and classpath according according to ClassLoader
-        // are equal and update accordingly.
-        updateJavaCP();
-
         Settings settings = new Settings();
-        settings.usemanifestcp().value_$eq(true);
+        settings.classpath().value_$eq(getClasspath());
 
-        // Scripted.apply sets settings.usejavacp = true
         return Scripted.apply(new Scripted.Factory(), settings,
                 new NewLinePrintWriter(new ConsoleWriter(), true));
     }
@@ -85,25 +76,9 @@ public class ScalaScriptLanguage extends AdaptedScriptLanguage {
      * Uses ClassLoader to generate a string of the current classpath separated by OS
      * specific separator.
      */
-    private String getClasspath() {
+    private static String getClasspath() {
         return Arrays.stream(((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs())
             .map(url -> url.getPath())
             .collect(Collectors.joining(System.getProperty("path.separator")));
-    }
-
-    /**
-     *  Checks whether "java.class.path" property in System properties and
-     *  classpath according to ClassLoader are equals and updates java.class.path
-     *  if necessary.
-     */
-    private void updateJavaCP() {
-        String cp = getClasspath();
-
-        if (!Objects.equals(System.getProperty("java.class.path"), cp)) {
-            Properties p = new Properties(System.getProperties());
-            p.setProperty("java.class.path", cp);
-
-            System.setProperties(p);
-        }
     }
 }
