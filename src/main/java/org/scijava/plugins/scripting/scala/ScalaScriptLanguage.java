@@ -30,21 +30,36 @@
 
 package org.scijava.plugins.scripting.scala;
 
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import javax.script.ScriptEngine;
 
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.AdaptedScriptLanguage;
 import org.scijava.script.ScriptLanguage;
+
+import scala.tools.nsc.ConsoleWriter;
+import scala.tools.nsc.NewLinePrintWriter;
+import scala.tools.nsc.Settings;
+import scala.tools.nsc.interpreter.Scripted;
 
 /**
  * An adapter of the Scala interpreter to the SciJava scripting interface.
  * 
  * @author Curtis Rueden
+ * @author Keith Schulze
  * @author Johannes Schindelin
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class, name = "Scala")
 public class ScalaScriptLanguage extends AdaptedScriptLanguage {
+
+	@Parameter
+	private LogService log;
 
 	public ScalaScriptLanguage() {
 		super("scala");
@@ -52,6 +67,23 @@ public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new ScalaScriptEngine(super.getScriptEngine());
+		final Settings settings = new Settings();
+		settings.classpath().value_$eq(getClasspath());
+
+		return Scripted.apply(new Scripted.Factory(), settings,
+			new NewLinePrintWriter(new ConsoleWriter(), true));
+	}
+
+	/** Retrieves the current classpath as a string. */
+	private String getClasspath() {
+		final ClassLoader cl = ClassLoader.getSystemClassLoader();
+		if (!(cl instanceof URLClassLoader)) {
+			log.warn("Cannot retrieve classpath from class loader of type '" +
+				cl.getClass().getName() + "'");
+			return System.getProperty("java.class.path");
+		}
+		return Arrays.stream(((URLClassLoader) cl).getURLs()).map(//
+			url -> url.getPath() //
+		).collect(Collectors.joining(System.getProperty("path.separator")));
 	}
 }

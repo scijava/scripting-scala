@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.StringWriter;
 
 import javax.script.ScriptEngine;
+import javax.script.SimpleScriptContext;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -57,11 +58,12 @@ public class ScalaTest {
 			scriptService.getLanguageByExtension("scala");
 		final ScriptEngine engine = language.getScriptEngine();
 
+		final SimpleScriptContext ssc = new SimpleScriptContext();
 		final StringWriter writer = new StringWriter();
-		engine.put("writer", writer);
+		ssc.setWriter(writer);
 
-		final String script = "writer.write(\"3\");";
-		engine.eval(script);
+		final String script = "print(\"3\");";
+		engine.eval(script, ssc);
 		assertEquals("3", writer.toString());
 	}
 }
