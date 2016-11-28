@@ -49,6 +49,7 @@ import scala.tools.nsc.interpreter.Scripted;
  * An adapter of the Scala interpreter to the SciJava scripting interface.
  * 
  * @author Curtis Rueden
+ * @author Keith Schulze
  * @author Johannes Schindelin
  * @see ScriptEngine
  */
