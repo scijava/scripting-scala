@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
 
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.AdaptedScriptLanguage;
 import org.scijava.script.ScriptLanguage;
@@ -56,6 +58,9 @@ import scala.tools.nsc.interpreter.Scripted;
 @Plugin(type = ScriptLanguage.class, name = "Scala")
 public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 
+	@Parameter
+	private LogService log;
+
 	public ScalaScriptLanguage() {
 		super("scala");
 	}
@@ -69,13 +74,16 @@ public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 			new NewLinePrintWriter(new ConsoleWriter(), true));
 	}
 
-	/**
-	 * Uses ClassLoader to generate a string of the current classpath separated by
-	 * OS specific separator.
-	 */
-	private static String getClasspath() {
-		return Arrays.stream(((URLClassLoader) ClassLoader.getSystemClassLoader())
-			.getURLs()).map(url -> url.getPath()).collect(Collectors.joining(System
-				.getProperty("path.separator")));
+	/** Retrieves the current classpath as a string. */
+	private String getClasspath() {
+		final ClassLoader cl = ClassLoader.getSystemClassLoader();
+		if (!(cl instanceof URLClassLoader)) {
+			log.warn("Cannot retrieve classpath from class loader of type '" +
+				cl.getClass().getName() + "'");
+			return System.getProperty("java.class.path");
+		}
+		return Arrays.stream(((URLClassLoader) cl).getURLs()).map(//
+			url -> url.getPath() //
+		).collect(Collectors.joining(System.getProperty("path.separator")));
 	}
 }
