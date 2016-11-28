@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>10.1.0</version>
+		<version>12.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -16,6 +16,10 @@
 	<description>JSR-223-compliant Scala scripting language plugin.</description>
 	<url>http://scijava.org/</url>
 	<inceptionYear>2013</inceptionYear>
+	<organization>
+		<name>SciJava</name>
+		<url>http://www.scijava.org/</url>
+	</organization>
 	<licenses>
 		<license>
 			<name>Simplified BSD License</name>
@@ -51,6 +55,16 @@
 		</contributor>
 	</contributors>
 
+	<mailingLists>
+		<mailingList>
+			<name>SciJava</name>
+			<subscribe>https://groups.google.com/group/scijava</subscribe>
+			<unsubscribe>https://groups.google.com/group/scijava</unsubscribe>
+			<post>scijava@googlegroups.com</post>
+			<archive>https://groups.google.com/group/scijava</archive>
+		</mailingList>
+	</mailingLists>
+
 	<scm>
 		<connection>scm:git:git://github.com/scijava/scripting-scala</connection>
 		<developerConnection>scm:git:git@github.com:scijava/scripting-scala</developerConnection>
@@ -67,7 +81,12 @@
 	</ciManagement>
 
 	<properties>
-		<scijava.jvm.version>1.8</scijava.jvm.version>
+		<package-name>org.scijava.plugins.scripting.scala</package-name>
+
+		<license.licenseName>bsd_2</license.licenseName>
+		<license.copyrightOwners>Board of Regents of the University of
+Wisconsin-Madison.</license.copyrightOwners>
+
 		<scala.version>2.12.0</scala.version>
 	</properties>
 
