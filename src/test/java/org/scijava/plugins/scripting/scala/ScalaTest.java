@@ -2,7 +2,7 @@
  * #%L
  * JSR-223-compliant Scala scripting language plugin.
  * %%
- * Copyright (C) 2013 - 2016 Board of Regents of the University of
+ * Copyright (C) 2013 - 2017 Board of Regents of the University of
  * Wisconsin-Madison.
  * %%
  * Redistribution and use in source and binary forms, with or without
