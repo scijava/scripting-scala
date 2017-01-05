@@ -44,8 +44,9 @@ import org.scijava.script.ScriptService;
 
 /**
  * Scala unit tests.
- * 
+ *
  * @author Johannes Schindelin
+ * @author Keith Schulze
  */
 public class ScalaTest {
 
