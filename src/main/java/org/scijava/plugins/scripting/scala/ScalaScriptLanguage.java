@@ -70,8 +70,10 @@ public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 		final Settings settings = new Settings();
 		settings.classpath().value_$eq(getClasspath());
 
-		return Scripted.apply(new Scripted.Factory(), settings,
-			new NewLinePrintWriter(new ConsoleWriter(), true));
+		Scripted eng = Scripted.apply(new Scripted.Factory(), settings,
+				new NewLinePrintWriter(new ConsoleWriter(), true));
+
+		return new ScalaScriptEngine(eng);
 	}
 
 	/** Retrieves the current classpath as a string. */
