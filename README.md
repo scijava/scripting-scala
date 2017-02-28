@@ -1,4 +1,4 @@
-[![](http://jenkins.imagej.net/job/scripting-Scala/lastBuild/badge/icon)](http://jenkins.imagej.net/job/scripting-Scala/)
+[![](https://travis-ci.org/scijava/scripting-scala.svg?branch=master)](https://travis-ci.org/scijava/scripting-scala)
 
 # Scala Scripting
 
