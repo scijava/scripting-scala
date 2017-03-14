@@ -14,7 +14,7 @@
 
 	<name>SciJava Scripting: Scala</name>
 	<description>JSR-223-compliant Scala scripting language plugin.</description>
-	<url>http://scijava.org/</url>
+	<url>https://github.com/scijava/scripting-scala</url>
 	<inceptionYear>2013</inceptionYear>
 	<organization>
 		<name>SciJava</name>
