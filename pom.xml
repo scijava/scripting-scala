@@ -88,6 +88,9 @@
 Wisconsin-Madison.</license.copyrightOwners>
 
 		<scala.version>2.12.1</scala.version>
+
+		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
+		<releaseProfiles>deploy-to-imagej</releaseProfiles>
 	</properties>
 
 	<dependencies>
