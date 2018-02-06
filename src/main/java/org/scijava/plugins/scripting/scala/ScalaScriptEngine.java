@@ -30,10 +30,18 @@
 
 package org.scijava.plugins.scripting.scala;
 
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.stream.StreamSupport;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.scijava.log.LogService;
+import org.scijava.module.ModuleItem;
+import org.scijava.plugin.Parameter;
 import org.scijava.script.AdaptedScriptEngine;
+import org.scijava.script.ScriptModule;
+import org.scijava.script.process.ScriptCallback;
 
 /**
  * Scala interpreter
@@ -43,29 +51,61 @@ import org.scijava.script.AdaptedScriptEngine;
  */
 public class ScalaScriptEngine extends AdaptedScriptEngine {
 
+    @Parameter
+    private LogService log;
+
     public ScalaScriptEngine(ScriptEngine engine) {
         super(engine);
     }
 
     @Override
+    public void put(final String key, final Object value) {
+        // Need to get the ScriptModule instance in order to get the inputs
+        // discovered at runtime. ScriptModule adds a reference to itself to
+        // the Bindings at the start of its run method.
+        Optional<String> outKey =
+            Optional.ofNullable((ScriptModule) super.get(ScriptModule.class.getName()))
+                .flatMap(sm -> {
+                    Spliterator<ModuleItem<?>> inputs = sm.getInfo().inputs().spliterator();
+                    Optional<String> output = StreamSupport.stream(inputs, false)
+                        .filter(i -> i.getName() == key)
+                        .findFirst()
+                        .map((ModuleItem<?> i) -> {     // Foreach input param, cast to the known type
+                            String name = i.getName();
+                            String type = i.getType().getName();
+                            String script = String.format("val %s: %s = _%s.asInstanceOf[%s]",
+                                name, type, name, type);
+                            ScriptCallback e = new ScriptCallback() {
+                                @Override
+                                public void invoke(ScriptModule module) throws ScriptException {
+                                    module.getEngine().eval(script);
+                                }
+                            };
+                            sm.getInfo().callbacks().add(e);
+                            return ("_" + key);
+                        });
+                    return (output);
+                });
+
+        super.put(outKey.orElse(key), value);
+    }
+
+    @Override
     public Object get(String key) {
-        // First try to get value from bindings
-        Object value = super.get(key);
+        // Values (variables) initialised or computed in the script are not added to
+        // the bindings of the ScriptContext. One way to extract them is to evaluate
+        // the variable and capture the return. So, first try to get value from bindings.
+        // If that returns null, then evaluate the variable in the ScriptEngine. If this
+        // returns null or throws a ScriptException, we simply return null.
+        Optional<Object> result = Optional.ofNullable(super.get(key));
 
-        // NB: Extracting values from Scala Script Engine are a little tricky.
-        // Values (variables) initialised or computed in the script are
-        // not added to the bindings of the CompiledScript AFAICT. Therefore
-        // the only way to extract them is to evaluate the variable and
-        // capture the return. If it evaluates to null or throws a
-        // a ScriptException, we simply return null.
-        if (value == null) try {
-            value = super.eval(key);
-        } catch (ScriptException ignored) {
-            // HACK: Explicitly ignore ScriptException, which arises if
-            // key is not found. This feels bad because it fails silently
-            // for the user, but it mimics behaviour in other script langs.
-        }
-
-        return value;
+        return result.orElseGet(() -> {
+            try {
+                return super.eval(key);
+            } catch (ScriptException se) {
+                log.error(se.getMessage());
+                return null;
+            }
+        });
     }
 }
