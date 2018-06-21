@@ -86,11 +86,12 @@
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of
 Wisconsin-Madison.</license.copyrightOwners>
-
-		<scala.version>2.12.1</scala.version>
+		<license.excludes>**/script_templates/**</license.excludes>
 
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+
+		<scala.version>2.12.1</scala.version>
 	</properties>
 
 	<dependencies>
