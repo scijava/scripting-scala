@@ -1,5 +1,5 @@
-// @String(label="Please enter your name",description="Name field") name
-// @OUTPUT String greeting
+#@ String(label="Please enter your name", description="Name field") name
+#@output String greeting
 
 // A Scala script with parameters
 // It is the duty of the scripting framework to harvest
