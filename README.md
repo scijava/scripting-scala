@@ -1,4 +1,4 @@
-[![](https://travis-ci.org/scijava/scripting-scala.svg?branch=master)](https://travis-ci.org/scijava/scripting-scala)
+[![](https://github.com/scijava/scripting-scala/actions/workflows/build-main.yml/badge.svg)](https://github.com/scijava/scripting-scala/actions/workflows/build-main.yml)
 
 # Scala Scripting
 
