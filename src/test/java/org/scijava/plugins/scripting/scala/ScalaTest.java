@@ -42,8 +42,7 @@ import javax.script.ScriptEngine;
 import javax.script.SimpleScriptContext;
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * Scala unit tests.
@@ -105,6 +104,25 @@ public class ScalaTest {
             final String expected =
                     scriptService.getLanguageByName("scala").getLanguageName();
             assertEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testImportsRetained() throws Exception {
+        try (final Context context = new Context(ScriptService.class)) {
+            final ScriptService scriptService = context.getService(ScriptService.class);
+            final ScriptEngine engine = scriptService.getLanguageByName("scala").getScriptEngine();
+            final String script = "" +
+                    "import org.scijava.util.VersionUtils\n" +
+                    "VersionUtils.getVersion(classOf[VersionUtils])\n";
+            final Object result = engine.eval(script);
+            assertTrue(result instanceof String);
+            final String version = (String) result;
+            assertTrue(version, version.matches("\\d+\\.\\d+\\.\\d"));
+
+            final String script2 = "VersionUtils.getVersion(classOf[VersionUtils])\n";
+            final Object result2 = engine.eval(script2);
+            assertEquals(result, result2);
         }
     }
 }
