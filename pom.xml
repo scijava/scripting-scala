@@ -95,7 +95,7 @@ Wisconsin-Madison.</license.copyrightOwners>
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
-		<scala.version>2.12.17</scala.version>
+		<scala.version>2.13.10</scala.version>
 	</properties>
 
 	<dependencies>
@@ -110,6 +110,21 @@ Wisconsin-Madison.</license.copyrightOwners>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-compiler</artifactId>
 			<version>${scala.version}</version>
+			<exclusions>
+				<exclusion>
+					<!-- To avoid error:
+                    [ERROR] Rule 3: org.apache.maven.plugins.enforcer.BanDuplicateClasses failed with message:
+                    No Duplicate Classes Allowed!
+                    - For duplicate transitive dependencies, add dependency exclusions.
+                    - For duplications between direct dependencies, resolve or add
+                      ignored classes to this rule's configuration.
+                      Found in:
+                        io.github.java-diff-utils:java-diff-utils:jar:4.12:compile
+                        org.scala-lang:scala-compiler:jar:2.13.10:compile			-->
+					<groupId>io.github.java-diff-utils</groupId>
+					<artifactId>java-diff-utils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Test dependencies -->

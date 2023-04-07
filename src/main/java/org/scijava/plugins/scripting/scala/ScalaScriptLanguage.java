@@ -45,7 +45,7 @@ import org.scijava.script.ScriptLanguage;
 import scala.tools.nsc.ConsoleWriter;
 import scala.tools.nsc.NewLinePrintWriter;
 import scala.tools.nsc.Settings;
-import scala.tools.nsc.interpreter.Scripted;
+import scala.tools.nsc.interpreter.shell.Scripted;
 
 /**
  * An adapter of the Scala interpreter to the SciJava scripting interface.
