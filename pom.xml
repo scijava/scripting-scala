@@ -91,7 +91,7 @@ Wisconsin-Madison.</license.copyrightOwners>
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
-		<scala.version>2.12.1</scala.version>
+		<scala.version>2.12.17</scala.version>
 	</properties>
 
 	<dependencies>
