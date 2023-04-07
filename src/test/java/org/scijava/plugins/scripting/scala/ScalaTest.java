@@ -49,6 +49,7 @@ import static org.junit.Assert.*;
  *
  * @author Johannes Schindelin
  * @author Keith Schulze
+ * @author Jarek Sacha
  */
 public class ScalaTest {
 
