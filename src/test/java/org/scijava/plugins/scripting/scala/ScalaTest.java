@@ -33,6 +33,7 @@ package org.scijava.plugins.scripting.scala;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptModule;
 import org.scijava.script.ScriptService;
 
 import javax.script.Bindings;
@@ -85,6 +86,25 @@ public class ScalaTest {
             final Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
             bindings.clear();
             assertNull(engine.get("hello"));
+        }
+    }
+
+    @Test
+    public void testParameters() throws Exception {
+        try (final Context context = new Context(ScriptService.class)) {
+            final ScriptService scriptService = context.getService(ScriptService.class);
+
+            final String script = "" + //
+                    "#@ScriptService ss\n" + //
+                    "#@OUTPUT String language\n" + //
+                    "val sst = ss.asInstanceOf[org.scijava.script.ScriptService]\n" + // `ss` needs cast from `Object`
+                    "val language = sst.getLanguageByName(\"scala\").getLanguageName()\n";
+            final ScriptModule m = scriptService.run("hello.scala", script, true).get();
+
+            final Object actual = m.getOutput("language");
+            final String expected =
+                    scriptService.getLanguageByName("scala").getLanguageName();
+            assertEquals(expected, actual);
         }
     }
 }
