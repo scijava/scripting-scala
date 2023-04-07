@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,17 +30,19 @@
 
 package org.scijava.plugins.scripting.scala;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.StringWriter;
-
-import javax.script.ScriptEngine;
-import javax.script.SimpleScriptContext;
-
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.script.ScriptLanguage;
 import org.scijava.script.ScriptService;
+
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.SimpleScriptContext;
+import java.io.StringWriter;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Scala unit tests.
@@ -50,21 +52,39 @@ import org.scijava.script.ScriptService;
  */
 public class ScalaTest {
 
-	@Test
-	public void testBasic() throws Exception {
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
+    @Test
+    public void testBasic() throws Exception {
+        final Context context = new Context(ScriptService.class);
+        final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptLanguage language =
-			scriptService.getLanguageByExtension("scala");
-		final ScriptEngine engine = language.getScriptEngine();
+        final ScriptLanguage language =
+                scriptService.getLanguageByExtension("scala");
+        final ScriptEngine engine = language.getScriptEngine();
 
-		final SimpleScriptContext ssc = new SimpleScriptContext();
-		final StringWriter writer = new StringWriter();
-		ssc.setWriter(writer);
+        final SimpleScriptContext ssc = new SimpleScriptContext();
+        final StringWriter writer = new StringWriter();
+        ssc.setWriter(writer);
 
-		final String script = "print(\"3\");";
-		engine.eval(script, ssc);
-		assertEquals("3", writer.toString());
-	}
+        final String script = "print(\"3\");";
+        engine.eval(script, ssc);
+        assertEquals("3", writer.toString());
+    }
+
+    @Test
+    public void testLocals() throws Exception {
+        try (final Context context = new Context(ScriptService.class)) {
+            final ScriptService scriptService = context.getService(ScriptService.class);
+
+            final ScriptLanguage language = scriptService.getLanguageByExtension("scala");
+            final ScriptEngine engine = language.getScriptEngine();
+            assertEquals("org.scijava.plugins.scripting.scala.ScalaScriptEngine", engine.getClass().getName());
+            engine.put("hello", 17);
+            assertEquals("17", engine.eval("hello").toString());
+            assertEquals("17", engine.get("hello").toString());
+
+            final Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+            bindings.clear();
+            assertNull(engine.get("hello"));
+        }
+    }
 }
