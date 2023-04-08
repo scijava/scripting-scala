@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -42,10 +43,10 @@ import org.scijava.plugin.Plugin;
 import org.scijava.script.AdaptedScriptLanguage;
 import org.scijava.script.ScriptLanguage;
 
-import scala.tools.nsc.ConsoleWriter;
-import scala.tools.nsc.NewLinePrintWriter;
-import scala.tools.nsc.Settings;
-import scala.tools.nsc.interpreter.shell.Scripted;
+//import scala.tools.nsc.ConsoleWriter;
+//import scala.tools.nsc.NewLinePrintWriter;
+//import scala.tools.nsc.Settings;
+//import scala.tools.nsc.interpreter.shell.Scripted;
 
 /**
  * An adapter of the Scala interpreter to the SciJava scripting interface.
@@ -67,12 +68,14 @@ public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		final Settings settings = new Settings();
-		settings.classpath().value_$eq(getClasspath());
-
-		Scripted eng = Scripted.apply(new Scripted.Factory(), settings,
-				new NewLinePrintWriter(new ConsoleWriter(), true));
-
+//		final Settings settings = new Settings();
+//		settings.classpath().value_$eq(getClasspath());
+//
+//		Scripted eng = Scripted.apply(new Scripted.Factory(), settings,
+//				new NewLinePrintWriter(new ConsoleWriter(), true));
+//		x = new dotty.tools.repl.ScriptEngine();
+//
+		final ScriptEngine eng = new ScriptEngineManager().getEngineByName("scala");
 		return new ScalaScriptEngine(eng);
 	}
 

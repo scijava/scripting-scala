@@ -96,37 +96,35 @@ Wisconsin-Madison.</license.copyrightOwners>
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
-		<scala.version>2.13.10</scala.version>
+		<scala.version>3.2.2</scala.version>
 	</properties>
 
-	<dependencies>
-		<!-- SciJava dependencies -->
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scijava-common</artifactId>
-		</dependency>
 
-		<!-- Scala dependencies -->
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-compiler</artifactId>
-			<version>${scala.version}</version>
-			<exclusions>
-				<exclusion>
-					<!-- To avoid error:
-                    [ERROR] Rule 3: org.apache.maven.plugins.enforcer.BanDuplicateClasses failed with message:
-                    No Duplicate Classes Allowed!
-                    - For duplicate transitive dependencies, add dependency exclusions.
-                    - For duplications between direct dependencies, resolve or add
-                      ignored classes to this rule's configuration.
-                      Found in:
-                        io.github.java-diff-utils:java-diff-utils:jar:4.12:compile
-                        org.scala-lang:scala-compiler:jar:2.13.10:compile			-->
-					<groupId>io.github.java-diff-utils</groupId>
-					<artifactId>java-diff-utils</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>4.8.0</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- SciJava dependencies -->
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>scijava-common</artifactId>
+        </dependency>
+
+        <!-- Scala dependencies -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala3-compiler_3</artifactId>
+            <version>${scala.version}</version>
+            <exclusions>
+            </exclusions>
+        </dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
