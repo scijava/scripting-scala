@@ -75,6 +75,17 @@ public class ScalaTest {
     }
 
     @Test
+    public void testEmptyReturnValue() throws Exception {
+        try (final Context context = new Context(ScriptService.class)) {
+            final ScriptService scriptService = context.getService(ScriptService.class);
+            final ScriptModule m = scriptService.run("hello.scala", "print(\"3\")", true).get();
+            final Void expected = null;
+            final Object actual = m.getReturnValue();
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
     public void testPutDouble() throws Exception {
         try (final Context context = new Context(ScriptService.class)) {
             final ScriptEngine engine = getEngine(context);

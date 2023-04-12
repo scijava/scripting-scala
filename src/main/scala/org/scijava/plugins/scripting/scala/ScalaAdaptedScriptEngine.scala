@@ -25,7 +25,13 @@ class ScalaAdaptedScriptEngine(engine: ScriptEngine) extends AbstractScriptEngin
   @throws[ScriptException]
   override def eval(script: String, context: ScriptContext): AnyRef =
     emulateBinding(context)
-    evalInner(script, context)
+    val r = evalInner(script, context)
+    // Scala returns `Unit` when no value is returned. Script Engine (or the
+    // Java side) expects `null` when no value was returned.
+    // Anything else return as is.
+    r match
+      case _: Unit => null
+      case x       => x
 
   private def emulateBinding(context: ScriptContext): Unit =
 
