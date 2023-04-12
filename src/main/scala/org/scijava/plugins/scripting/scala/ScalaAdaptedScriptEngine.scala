@@ -98,12 +98,12 @@ class ScalaAdaptedScriptEngine(engine: ScriptEngine) extends AbstractScriptEngin
     // First try to get value from bindings
     var value = super.get(key)
 
-    // NB: Extracting values from Scala Script Engine are a little tricky.// NB: Extracting values from Scala Script Engine are a little tricky.
-    // Values (variables) initialised or computed in the script are// Values (variables) initialised or computed in the script are
-    // not added to the bindings of the CompiledScript AFAICT. Therefore// not added to the bindings of the CompiledScript AFAICT. Therefore
-    // the only way to extract them is to evaluate the variable and// the only way to extract them is to evaluate the variable and
-    // capture the return. If it evaluates to null or throws a// capture the return. If it evaluates to null or throws a
-    // a ScriptException, we simply return null.// a ScriptException, we simply return null.
+    // NB: Extracting values from Scala Script Engine are a little tricky.
+    // Values (variables) initialised or computed in the script are
+    // not added to the bindings of the CompiledScript AFAICT. Therefore
+    // the only way to extract them is to evaluate the variable and
+    // capture the return. If it evaluates to null or throws a
+    // a ScriptException, we simply return null.
     if value == null then
       try
         value = evalInner(key, getContext)
