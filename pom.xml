@@ -106,6 +106,16 @@ Wisconsin-Madison.</license.copyrightOwners>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>4.8.0</version>
+				<configuration>
+					<args>
+						<arg>-unchecked</arg>
+						<arg>-deprecation</arg>
+						<arg>-explain</arg>
+						<arg>-explain-types</arg>
+						<arg>-release</arg>
+						<arg>8</arg>
+					</args>
+				</configuration>
 				<executions>
 					<execution>
 						<id>scala-compile-first</id>
