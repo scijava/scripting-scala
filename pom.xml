@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>scripting-scala</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.3.0</version>
 
 	<name>SciJava Scripting: Scala</name>
 	<description>JSR-223-compliant Scala scripting language plugin.</description>
@@ -72,7 +72,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/scijava/scripting-scala</connection>
 		<developerConnection>scm:git:git@github.com:scijava/scripting-scala</developerConnection>
-		<tag>HEAD</tag>
+		<tag>scripting-scala-0.3.0</tag>
 		<url>https://github.com/scijava/scripting-scala</url>
 	</scm>
 	<issueManagement>
