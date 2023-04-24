@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>27.0.1</version>
+		<version>34.0.0</version>
 		<relativePath />
 	</parent>
 
 	<artifactId>scripting-scala</artifactId>
-	<version>0.2.3-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 
 	<name>SciJava Scripting: Scala</name>
 	<description>JSR-223-compliant Scala scripting language plugin.</description>
@@ -53,6 +53,10 @@
 			<name>Keith Schulze</name>
 			<properties><id>keithschulze</id></properties>
 		</contributor>
+		<contributor>
+			<name>Jarek Sacha</name>
+			<properties><id>jpsacha</id></properties>
+		</contributor>
 	</contributors>
 
 	<mailingLists>
@@ -82,6 +86,7 @@
 
 	<properties>
 		<package-name>org.scijava.plugins.scripting.scala</package-name>
+		<main-class>org.scijava.plugins.scripting.scala.Main</main-class>
 
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of
@@ -91,22 +96,62 @@ Wisconsin-Madison.</license.copyrightOwners>
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
-		<scala.version>2.12.1</scala.version>
+		<scala.version>3.2.2</scala.version>
 	</properties>
 
-	<dependencies>
-		<!-- SciJava dependencies -->
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scijava-common</artifactId>
-		</dependency>
 
-		<!-- Scala dependencies -->
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-compiler</artifactId>
-			<version>${scala.version}</version>
-		</dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>4.8.0</version>
+				<configuration>
+					<args>
+						<arg>-unchecked</arg>
+						<arg>-deprecation</arg>
+						<arg>-explain</arg>
+						<arg>-explain-types</arg>
+						<arg>-release</arg>
+						<arg>8</arg>
+					</args>
+				</configuration>
+				<executions>
+					<execution>
+						<id>scala-compile-first</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>add-source</goal>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>scala-test-compile</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- SciJava dependencies -->
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>scijava-common</artifactId>
+        </dependency>
+
+        <!-- Scala dependencies -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala3-compiler_3</artifactId>
+            <version>${scala.version}</version>
+            <exclusions>
+            </exclusions>
+        </dependency>
 
 		<!-- Test dependencies -->
 		<dependency>

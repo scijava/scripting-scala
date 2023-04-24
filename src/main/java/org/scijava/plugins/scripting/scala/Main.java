@@ -1,19 +1,18 @@
-/*
+/*-
  * #%L
  * JSR-223-compliant Scala scripting language plugin.
  * %%
- * Copyright (C) 2013 - 2016 Board of Regents of the University of
- * Wisconsin-Madison.
+ * Copyright (C) 2014 - 2023 SciJava developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,45 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-
 package org.scijava.plugins.scripting.scala;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import org.scijava.script.ScriptREPL;
 
-import org.scijava.script.AdaptedScriptEngine;
+public class Main {
 
-/**
- * Scala interpreter
- *
- * @author Keith Schulze
- * @see ScriptEngine
- */
-public class ScalaScriptEngine extends AdaptedScriptEngine {
-
-    public ScalaScriptEngine(ScriptEngine engine) {
-        super(engine);
-    }
-
-    @Override
-    public Object get(String key) {
-        // First try to get value from bindings
-        Object value = super.get(key);
-
-        // NB: Extracting values from Scala Script Engine are a little tricky.
-        // Values (variables) initialised or computed in the script are
-        // not added to the bindings of the CompiledScript AFAICT. Therefore
-        // the only way to extract them is to evaluate the variable and
-        // capture the return. If it evaluates to null or throws a
-        // a ScriptException, we simply return null.
-        if (value == null) try {
-            value = super.eval(key);
-        } catch (ScriptException ignored) {
-            // HACK: Explicitly ignore ScriptException, which arises if
-            // key is not found. This feels bad because it fails silently
-            // for the user, but it mimics behaviour in other script langs.
-        }
-
-        return value;
-    }
+	public static void main(String... args) throws Exception {
+		ScriptREPL.main(args);
+	}
 }
