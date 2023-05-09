@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,17 +29,17 @@
 
 package org.scijava.plugins.scripting.scala;
 
-import javax.script.ScriptEngine;
-
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.AdaptedScriptLanguage;
 import org.scijava.script.ScriptLanguage;
 
+import javax.script.ScriptEngine;
+
 /**
  * An adapter of the Scala interpreter to the SciJava scripting interface.
- * 
+ *
  * @author Curtis Rueden
  * @author Keith Schulze
  * @author Johannes Schindelin
@@ -49,16 +49,10 @@ import org.scijava.script.ScriptLanguage;
 @Plugin(type = ScriptLanguage.class, name = "Scala")
 public class ScalaScriptLanguage extends AdaptedScriptLanguage {
 
-	@Parameter
-	private LogService log;
+    @Parameter
+    private LogService log;
 
-	public ScalaScriptLanguage() {
-		super("scala");
-	}
-
-	@Override
-	public ScriptEngine getScriptEngine() {
-		final ScriptEngine eng = new dotty.tools.repl.ScriptEngine();
-		return new ScalaAdaptedScriptEngine(eng);
-	}
+    public ScalaScriptLanguage() {
+        super(new ScalaAdaptedScriptEngineFactory());
+    }
 }
