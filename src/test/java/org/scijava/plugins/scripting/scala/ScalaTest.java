@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,12 +35,12 @@ import org.scijava.script.ScriptLanguage;
 import org.scijava.script.ScriptModule;
 import org.scijava.script.ScriptService;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.SimpleScriptContext;
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Scala unit tests.
@@ -210,7 +210,7 @@ public class ScalaTest {
             assertEquals("17", engine.eval("hello").toString());
             assertEquals("17", engine.get("hello").toString());
 
-//             With Scala 3.2.2 cannot reset bindings correctly, will skip the ret of the test
+//             With Scala 3.2.2 cannot reset bindings correctly, will skip the rest of the test
 //            final Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
 //            bindings.clear();
 //            assertNull(engine.get("hello"));
@@ -264,6 +264,26 @@ public class ScalaTest {
             final String script2 = "VersionUtils.getVersion(classOf[VersionUtils])\n";
             final Object result2 = engine.eval(script2);
             assertEquals(result, result2);
+        }
+    }
+
+    /**
+     * Test for issue #5: "eval should sometimes make an entry in the ENGINE_SCOPE bindings"
+     */
+    @Test
+    public void issue5() {
+        try (final Context context = new Context(ScriptService.class)) {
+
+            final ScriptService scriptService = context.getService(ScriptService.class);
+            final ScriptEngine engine = scriptService.getLanguageByName("scala").getScriptEngine();
+
+            assertFalse(engine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey("ten"));
+            engine.put("ten", 10);
+            assertEquals(10, engine.get("ten"));
+            assertTrue(engine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey("ten"));
+
+            engine.put("twenty", 20);
+            assertEquals(20, engine.get("twenty"));
         }
     }
 }
