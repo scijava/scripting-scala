@@ -37,6 +37,7 @@ import org.scijava.script.ScriptService;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import java.io.StringWriter;
 
@@ -285,5 +286,45 @@ public class ScalaTest {
             engine.put("twenty", 20);
             assertEquals(20, engine.get("twenty"));
         }
+    }
+
+    /**
+     * Test for issue #9: "ScriptREPL is not usable - problem with variables named as Scala keywords"
+     */
+    @Test
+    public void issue9() {
+        try (final Context context = new Context(ScriptService.class)) {
+
+            final ScriptService scriptService = context.getService(ScriptService.class);
+            final ScriptEngine engine = scriptService.getLanguageByName("scala").getScriptEngine();
+
+            final String name = "object";
+            final int expectedValue = 7;
+
+            assertFalse(engine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name));
+            engine.put(name, expectedValue);
+            assertTrue(engine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name));
+            assertEquals(expectedValue, engine.get(name));
+
+            final String script1 = "val abc = `" + name + "`";
+            try {
+                engine.eval(script1);
+            } catch (ScriptException e) {
+                fail("Failed to execute valid script: \"" + script1 + "\"");
+            }
+
+            final Object r = engine.get("abc");
+            assertEquals(expectedValue, r);
+
+        }
+    }
+
+    @Test
+    public void addBackticksIfNeededTest() {
+        final String expected = "org.scijava.`object`.DefaultObjectService";
+        final String name = "org.scijava.object.DefaultObjectService";
+        final String correctedName = ScalaAdaptedScriptEngine.addBackticksIfNeeded(name);
+
+        assertEquals(expected, correctedName);
     }
 }
