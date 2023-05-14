@@ -31,6 +31,7 @@ package org.scijava.plugins.scripting.scala
 
 import org.scijava.plugins.scripting.scala.ScalaAdaptedScriptEngine
 
+import java.net.URLClassLoader
 import java.util
 import javax.script.{ScriptEngine, ScriptEngineFactory}
 
@@ -42,7 +43,7 @@ import javax.script.{ScriptEngine, ScriptEngineFactory}
  */
 class ScalaAdaptedScriptEngineFactory extends ScriptEngineFactory:
 
-  private val factory = new dotty.tools.repl.ScriptEngine.Factory
+  private val factory = new dotty.tools.repl.SciJavaScriptEngine.Factory(classPath)
 
   /**
    * Returns an instance of the `ScalaAdaptedScriptEngine`.
@@ -64,3 +65,12 @@ class ScalaAdaptedScriptEngineFactory extends ScriptEngineFactory:
   override def getMethodCallSyntax(obj: String, m: String, args: String*): String =
     factory.getMethodCallSyntax(obj, m, args*)
   override def getProgram(statements: String*): String = factory.getProgram(statements*)
+
+  /**
+   * Retrieves the current classpath as a string.
+   */
+  def classPath: String = ClassLoader.getSystemClassLoader match
+    case cl: URLClassLoader =>
+      cl.getURLs.map(_.getPath).mkString(System.getProperty("path.separator"))
+    case _ =>
+      System.getProperty("java.class.path")
