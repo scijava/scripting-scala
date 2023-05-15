@@ -40,6 +40,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -183,6 +185,28 @@ public class ScalaTest {
         }
     }
 
+    @Test
+    public void testPut3Strings() throws Exception {
+        // Check that multiple AnyRef variable are bound correctly
+        try (final Context context = new Context(ScriptService.class)) {
+            final ScriptEngine engine = getEngine(context);
+            final String expected1 = "Ala ma kota";
+            final String expected2 = "Kot ma Ale";
+            final String expected3 = "Reksio nie ma butow";
+            engine.put("v1", expected1);
+            engine.put("v2", expected2);
+            engine.put("v3", expected3);
+            final String script = "\n" +
+                    "val o1:String = v1\n" +
+                    "val o2:String = v2\n" +
+                    "val o3:String = v3\n";
+            engine.eval(script);
+            assertEquals(expected1, engine.get("o1"));
+            assertEquals(expected2, engine.get("o2"));
+            assertEquals(expected3, engine.get("o3"));
+        }
+    }
+
 
     @Test
     public void testPutInt() throws Exception {
@@ -192,6 +216,23 @@ public class ScalaTest {
             final int expected = 7;
             engine.put("v", expected);
             final String script = "val v1:Int = v";
+            engine.eval(script);
+            final Object actual = engine.get("v1");
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testPutSeqInt() throws Exception {
+        try (final Context context = new Context(ScriptService.class)) {
+            final ScriptEngine engine = getEngine(context);
+
+            final List<Integer> expected = new ArrayList<>();
+            expected.add(7);
+            expected.add(13);
+            expected.add(-1);
+            engine.put("v", expected);
+            final String script = "val v1 = v";
             engine.eval(script);
             final Object actual = engine.get("v1");
             assertEquals(expected, actual);

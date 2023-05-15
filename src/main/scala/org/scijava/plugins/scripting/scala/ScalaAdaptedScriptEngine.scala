@@ -34,6 +34,7 @@ import javax.script.*
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
+import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
 /**
@@ -67,12 +68,12 @@ class ScalaAdaptedScriptEngine(engine: ScriptEngine) extends AbstractScriptEngin
 
     // Scala 3.2.2 ignores bindings, emulate binding using setup script
     // Create a line with variable declaration for each binding item
-    val lines =
+    val transfers: mutable.Seq[Seq[String]] =
       for
         scope    <- context.getScopes.asScala
         bindings <- Option(context.getBindings(scope)).map(_.asScala) // bindings in context can be null
       yield {
-        for (name, value) <- bindings yield {
+        for (name, value) <- bindings.toSeq yield {
           if isValidVariableName(name) then
             val validName = addBackticksIfNeeded(name)
             value match
@@ -85,12 +86,22 @@ class ScalaAdaptedScriptEngine(engine: ScriptEngine) extends AbstractScriptEngin
               case v: Byte    => s"val $validName : Byte = $v"
               case v: Boolean => s"val $validName : Int = $v"
               case v: AnyRef =>
-                _transfer = v
-                val typeName      = Option(v).map(_.getClass.getCanonicalName).getOrElse("AnyRef")
+                val transferIndex = BindingSupport.nextTransferIndex
+                BindingSupport.__transfer(transferIndex) = v
+                val typeName = Option(v)
+                  .map { oo =>
+                    val tt: Array[_] = oo.getClass.getTypeParameters
+                    tt.foreach(t => log(s"${oo.getClass.getCanonicalName} TYPE PARAM: ${t.getClass.getName}"))
+                    val p = tt.map(_ => "_").mkString("[", ",", "]")
+                    val n = oo.getClass.getCanonicalName
+                    if tt.nonEmpty then n + p else n
+                  }
+                  .getOrElse("AnyRef")
                 val validTypeName = addBackticksIfNeeded(typeName)
                 s"""
                    |val $validName : $validTypeName = {
-                   |  val t = org.scijava.plugins.scripting.scala.ScalaAdaptedScriptEngine._transfer
+                   |  val t = org.scijava.plugins.scripting.scala.ScalaAdaptedScriptEngine.BindingSupport
+                   |             ._transfer($transferIndex)
                    |  t.asInstanceOf[$validTypeName]
                    |}""".stripMargin
               case v: Unit =>
@@ -100,26 +111,45 @@ class ScalaAdaptedScriptEngine(engine: ScriptEngine) extends AbstractScriptEngin
         }
       }
 
-    val script = lines
+    val script = transfers
       .flatten
       .filter(_.nonEmpty)
       .mkString("\n")
 
-    if script.nonEmpty then
-      evalInner(script, context)
+    evalInner(script, context)
 
   end emulateBinding
 
-  private def evalInner(script: String, context: ScriptContext) =
-    class WriterOutputStream(w: Writer) extends OutputStream:
-      override def write(b: Int): Unit = w.write(b)
+  private def evalInner(script: String, context: ScriptContext): AnyRef =
+    log(
+      s"""
+        |LOG[evalInner] script 
+        |BEGIN
+        |---------------------------
+        |$script
+        |---------------------------
+        |END
+        |""".stripMargin
+    )
+    if script.trim.isEmpty then
+      log("LOG[evalInner] script is empty, skipping evaluation")
+      null
+    else
+      class WriterOutputStream(w: Writer) extends OutputStream:
+        override def write(b: Int): Unit = w.write(b)
 
-    // Redirect output to writes provided by context
-    Console.withOut(WriterOutputStream(context.getWriter)) {
-      Console.withErr(WriterOutputStream(context.getErrorWriter)) {
-        engine.eval(script, context)
-      }
-    }
+      try
+        // Redirect output to writes provided by context
+        Console.withOut(WriterOutputStream(context.getWriter)) {
+          Console.withErr(WriterOutputStream(context.getErrorWriter)) {
+            engine.eval(script, context)
+          }
+        }
+      catch
+        case NonFatal(t) =>
+          log(s"LOG[evalInner] in eval: $t")
+          t.printStackTrace()
+          throw t
 
   private def stringFromReader(in: Reader) =
     val out = new StringWriter()
@@ -156,9 +186,15 @@ class ScalaAdaptedScriptEngine(engine: ScriptEngine) extends AbstractScriptEngin
     value
   end get
 
+  private def log(msg: String): Unit = {
+    if ScalaAdaptedScriptEngine.DEBUG then
+      Console.out.println(msg)
+  }
+
 end ScalaAdaptedScriptEngine
 
 object ScalaAdaptedScriptEngine:
+  private val DEBUG: Boolean           = false
   private lazy val variableNamePattern = """^[a-zA-Z_$][a-zA-Z_$0-9]*$""".r
   private val scala3Keywords = Seq(
     "abstract",
@@ -204,10 +240,6 @@ object ScalaAdaptedScriptEngine:
     "yield"
   )
 
-  /** Do not use externally despite it is declared public. IT is public so it is accessible from scripts */
-  // noinspection ScalaWeakerAccess
-  var _transfer: Object = _
-
   private def isValidVariableName(name: String): Boolean = variableNamePattern.matches(name)
 
   private[scala] def addBackticksIfNeeded(referenceName: String): String =
@@ -215,5 +247,33 @@ object ScalaAdaptedScriptEngine:
       .split("\\.")
       .map(n => if scala3Keywords.contains(n) then s"`$n`" else n)
       .mkString(".")
+
+  /**
+   * Temporary support for implementing binding in the script engine.
+   * It has limited capacity and does not free memory.
+   * Access to storage is public, so it is visible from scripts.
+   */
+  //noinspection ScalaWeakerAccess
+  object BindingSupport:
+    private val MaxTransfers: Int = 1024 * 1024
+
+    /**
+     * Do not use externally despite it is declared public.
+     * It is public so it is accessible from scripts that are used to emulate variable binding
+     */
+    // noinspection ScalaWeakerAccess,ScalaUnusedSymbol
+    def _transfer: Seq[AnyRef] = __transfer.toSeq
+
+    private[scala] val __transfer: mutable.ListBuffer[AnyRef] = mutable.ListBuffer.empty[AnyRef]
+
+    private var lastTransferIndex = -1
+
+    private[scala] def nextTransferIndex: Int =
+      if lastTransferIndex + 1 >= MaxTransfers then
+        throw new IllegalStateException("ScalaAdaptedScriptEngine: maximum transfer limit reached")
+
+      lastTransferIndex += 1
+      __transfer.append(null)
+      lastTransferIndex
 
 end ScalaAdaptedScriptEngine
