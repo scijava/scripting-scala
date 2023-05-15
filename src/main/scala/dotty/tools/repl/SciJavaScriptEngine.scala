@@ -78,7 +78,7 @@ object SciJavaScriptEngine {
   class Factory(classPath: String) extends ScriptEngineFactory {
     def getEngineName      = "Scala REPL for SciJava"
     def getEngineVersion   = "3.0"
-    def getExtensions      = Arrays.asList("scala")
+    def getExtensions      = Arrays.asList("scala", "sc")
     def getLanguageName    = "Scala"
     def getLanguageVersion = Properties.versionString
     def getMimeTypes       = Arrays.asList("application/x-scala")
