@@ -32,6 +32,7 @@ package org.scijava.plugins.scripting.scala
 import org.scijava.plugins.scripting.scala.ScalaAdaptedScriptEngine
 
 import java.net.URLClassLoader
+import java.nio.file.Paths
 import java.util
 import javax.script.{ScriptEngine, ScriptEngineFactory}
 
@@ -71,6 +72,8 @@ class ScalaAdaptedScriptEngineFactory extends ScriptEngineFactory:
    */
   def classPath: String = ClassLoader.getSystemClassLoader match
     case cl: URLClassLoader =>
-      cl.getURLs.map(_.getPath).mkString(System.getProperty("path.separator"))
+      cl.getURLs
+        .map(url => Paths.get(url.toURI).toString)
+        .mkString(System.getProperty("path.separator"))
     case _ =>
       System.getProperty("java.class.path")
