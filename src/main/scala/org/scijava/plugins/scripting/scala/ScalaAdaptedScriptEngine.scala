@@ -92,7 +92,7 @@ class ScalaAdaptedScriptEngine(engine: ScriptEngine) extends AbstractScriptEngin
                   .map { oo =>
                     val tt: Array[_] = oo.getClass.getTypeParameters
                     tt.foreach(t => log(s"${oo.getClass.getCanonicalName} TYPE PARAM: ${t.getClass.getName}"))
-                    val p = tt.map(_ => "_").mkString("[", ",", "]")
+                    val p = tt.map(_ => "?").mkString("[", ",", "]")
                     val n = oo.getClass.getCanonicalName
                     if tt.nonEmpty then n + p else n
                   }

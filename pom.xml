@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
@@ -11,7 +10,6 @@
 
 	<artifactId>scripting-scala</artifactId>
 	<version>0.3.3-SNAPSHOT</version>
-
 	<name>SciJava Scripting: Scala</name>
 	<description>JSR-223-compliant Scala scripting language plugin.</description>
 	<url>https://github.com/scijava/scripting-scala</url>
@@ -95,8 +93,11 @@
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
-		<scala.version>3.3.0</scala.version>
+		<scala.version>3.7.2</scala.version>
 		<scala-maven-plugin.version>4.8.1</scala-maven-plugin.version>
+
+		<!-- JaCoCo version that supports Java 21 -->
+		<jacoco.version>0.8.11</jacoco.version>
 	</properties>
 
 	<dependencies>
@@ -136,7 +137,7 @@
 						<arg>-explain</arg>
 						<arg>-explain-types</arg>
 						<arg>-release</arg>
-						<arg>8</arg>
+						<arg>21</arg>
 					</args>
 				</configuration>
 				<executions>
@@ -156,6 +157,11 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
 			</plugin>
 		</plugins>
 	</build>
