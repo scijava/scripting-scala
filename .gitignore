@@ -4,6 +4,7 @@
 .project
 .classpath
 .settings/
+/.factorypath
 
 # Maven #
 target/
